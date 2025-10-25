@@ -227,25 +227,19 @@ function executeCreateComponent(data: CreateComponentData, context: ExecutionCon
     throw new Error('Custom component creation requires componentCode and componentName');
   }
 
-  // Create a custom component entry
-  const customComponent: CanvasComponent = {
-    id: `custom-${Date.now()}`,
-    componentId: 'custom',
+  // Create a custom component that matches the RestaurantComponent structure
+  const customComponent: RestaurantComponent = {
+    id: 'custom',
     name: data.componentName,
+    description: data.description || 'Custom AI-generated component',
     category: 'custom',
-    props: {
+    icon: 'Code',
+    defaultProps: {
       code: data.componentCode,
       description: data.description || 'Custom component',
       ...data.defaultProps,
     },
-    position: context.pages.find(p => p.id === context.currentPageId)?.components.length || 0,
   };
-
-  // For now, we'll show the code to the user and let them know this feature is experimental
-  toast.info(
-    `Custom component "${data.componentName}" created! Note: This is an experimental feature. The component code is stored but may require manual integration.`,
-    { duration: 5000 }
-  );
 
   console.log('🎨 Custom Component Created:', {
     name: data.componentName,
@@ -253,15 +247,14 @@ function executeCreateComponent(data: CreateComponentData, context: ExecutionCon
     props: data.defaultProps,
   });
 
-  // Add the component placeholder
-  // In a full implementation, this would:
-  // 1. Validate the TypeScript/React code
-  // 2. Bundle it dynamically
-  // 3. Register it in the component library
-  // 4. Make it available for use
+  // Add the component to the page
+  context.onDrop(customComponent, data.parentId);
   
-  // For now, we just acknowledge the creation
-  toast.warning('Custom components are experimental. The code has been logged to the console for review.');
+  // Show success message
+  toast.success(
+    `Custom component "${data.componentName}" added! This is experimental - review the code using the component's controls.`,
+    { duration: 5000 }
+  );
 }
 
 function executeCreateMultiple(data: CreateMultipleData, context: ExecutionContext): void {
