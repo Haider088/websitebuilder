@@ -2,13 +2,13 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { AIContext, AIResponse, AIAction, AIActionType, AIRiskLevel } from '../types/ai';
 import { restaurantComponents } from '../data/restaurantComponents';
 
-const API_KEY = 'AIzaSyDAufa8Bphnnx1mkPeslmhSOWXiHM49cw8';
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || '';
 
 let genAI: GoogleGenerativeAI | null = null;
 
 export function initializeAI(): boolean {
-  if (!API_KEY || API_KEY === 'your_gemini_api_key_here' || API_KEY === '') {
-    console.warn('Gemini API key not configured. Add VITE_GEMINI_API_KEY to your .env file.');
+  if (!API_KEY || API_KEY === '') {
+    console.warn('Gemini API key not configured. Add VITE_GEMINI_API_KEY secret in Replit.');
     return false;
   }
   
@@ -22,7 +22,7 @@ export function initializeAI(): boolean {
 }
 
 export function isAIAvailable(): boolean {
-  return genAI !== null && !!API_KEY && API_KEY !== 'your_gemini_api_key_here' && API_KEY !== '';
+  return genAI !== null && !!API_KEY && API_KEY !== '';
 }
 
 const SYSTEM_PROMPT = `You are an AI assistant for a restaurant website builder. You help non-technical restaurant owners create beautiful websites.
