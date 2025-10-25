@@ -43,7 +43,7 @@ When users ask questions or want explanations, provide comprehensive, helpful an
 
 Available components with their default props:
 ${restaurantComponents.map(c => {
-  const propsInfo = Object.keys(c.defaultProps).join(', ');
+  const propsInfo = Object.keys(c.defaultProps || {}).join(', ');
   return `- ${c.name} (id: "${c.id}"): ${c.description}
   Props: ${propsInfo}`;
 }).join('\\n')}
