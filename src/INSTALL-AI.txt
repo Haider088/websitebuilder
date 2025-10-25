@@ -1,0 +1,38 @@
+================================================================================
+  AI ASSISTANT - INSTALLATION REQUIRED
+================================================================================
+
+To use the AI Assistant feature, you need to:
+
+1. Install the Google Generative AI package:
+   
+   npm install @google/generative-ai
+
+2. Create a .env file (copy from .env.example):
+   
+   cp .env.example .env
+
+3. Get your free API key from:
+   
+   https://aistudio.google.com/app/apikey
+
+4. Add your API key to the .env file:
+   
+   VITE_GEMINI_API_KEY=your_actual_api_key_here
+
+5. Restart your development server:
+   
+   npm run dev
+
+================================================================================
+
+The AI Assistant button will appear in the toolbar once configured.
+
+For detailed instructions, see:
+- AI-QUICK-START.md (quick 2-minute setup)
+- AI-SETUP-INSTRUCTIONS.md (comprehensive guide)
+- AI-ARCHITECTURE.md (technical details)
+
+Questions? Check the browser console for specific error messages.
+
+================================================================================
