@@ -7,13 +7,14 @@ A modern, interactive website builder specifically designed for creating restaur
 - **Initial Replit Setup**: Configured the project to run in the Replit environment
 - Created TypeScript configuration files (`tsconfig.json`, `tsconfig.node.json`)
 - Created Tailwind CSS configuration (`tailwind.config.js`)
-- Created PostCSS configuration with Tailwind CSS v4 plugin
-- Updated Vite configuration to use port 5000 and host 0.0.0.0
+- Created PostCSS configuration with Tailwind CSS v4 plugin (@tailwindcss/postcss)
+- Updated Vite configuration to use port 5000, host 0.0.0.0, and allowedHosts: true
 - Added "type": "module" to package.json
 - Created .gitignore file
-- Installed missing dependencies (Tailwind CSS, Autoprefixer, TypeScript)
+- Installed missing dependencies (Tailwind CSS v4, @tailwindcss/postcss, Autoprefixer, TypeScript)
 - Configured workflow for development server
 - Configured deployment settings for Autoscale deployment
+- **Fixed**: Added `allowedHosts: true` to vite.config.ts to allow Replit proxy domains
 
 ## Project Architecture
 
