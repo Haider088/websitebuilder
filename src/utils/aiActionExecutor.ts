@@ -25,34 +25,40 @@ export async function executeActions(
   actions: AIAction[],
   context: ExecutionContext
 ): Promise<{ success: boolean; message: string }> {
-  try {
-    for (let i = 0; i < actions.length; i++) {
-      const action = actions[i];
-      try {
-        await executeAction(action, context);
-      } catch (actionError) {
-        console.error(`Failed to execute action ${i + 1}/${actions.length}:`, {
-          actionType: action.type,
-          actionData: action.data,
-          error: actionError,
-        });
-        throw new Error(
-          `Failed to execute ${action.type} action: ${actionError instanceof Error ? actionError.message : 'Unknown error'}`
-        );
-      }
+  let successCount = 0;
+  const errors: string[] = [];
+  
+  for (let i = 0; i < actions.length; i++) {
+    const action = actions[i];
+    try {
+      console.log(`Executing action ${i + 1}/${actions.length}:`, action.type, action.description);
+      await executeAction(action, context);
+      successCount++;
+      console.log(`✅ Action ${i + 1} completed successfully`);
+    } catch (actionError) {
+      const errorMsg = actionError instanceof Error ? actionError.message : 'Unknown error';
+      console.error(`❌ Failed to execute action ${i + 1}/${actions.length}:`, {
+        actionType: action.type,
+        actionData: action.data,
+        error: actionError,
+      });
+      errors.push(`Action ${i + 1} (${action.type}): ${errorMsg}`);
+      // Continue executing remaining actions instead of stopping
     }
-    
+  }
+  
+  if (errors.length > 0) {
+    console.warn(`⚠️ Completed with ${errors.length} error(s):`, errors);
     return {
-      success: true,
-      message: `Successfully executed ${actions.length} action${actions.length > 1 ? 's' : ''}`,
-    };
-  } catch (error) {
-    console.error('Failed to execute actions:', error);
-    return {
-      success: false,
-      message: error instanceof Error ? error.message : 'Failed to execute actions',
+      success: successCount > 0,
+      message: `Executed ${successCount}/${actions.length} actions. Errors: ${errors.join('; ')}`,
     };
   }
+  
+  return {
+    success: true,
+    message: `Successfully executed ${actions.length} action${actions.length > 1 ? 's' : ''}`,
+  };
 }
 
 async function executeAction(action: AIAction, context: ExecutionContext): Promise<void> {
