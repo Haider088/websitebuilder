@@ -16,12 +16,18 @@ export function useHistory<T>(initialState: T) {
   const canUndo = state.past.length > 0;
   const canRedo = state.future.length > 0;
 
-  const set = useCallback((newPresent: T, clearFuture = true) => {
-    setState((current) => ({
-      past: [...current.past, current.present],
-      present: newPresent,
-      future: clearFuture ? [] : current.future,
-    }));
+  const set = useCallback((newPresent: T | ((prev: T) => T), clearFuture = true) => {
+    setState((current) => {
+      const resolvedPresent = typeof newPresent === 'function' 
+        ? (newPresent as (prev: T) => T)(current.present)
+        : newPresent;
+      
+      return {
+        past: [...current.past, current.present],
+        present: resolvedPresent,
+        future: clearFuture ? [] : current.future,
+      };
+    });
   }, []);
 
   const undo = useCallback(() => {

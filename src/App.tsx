@@ -326,8 +326,12 @@ export default function App() {
   const selectedComponent = selectedComponents.length === 1 ? selectedComponents[0] : null;
 
   // Helper to update state
-  const updateState = useCallback((updates: Partial<AppState>) => {
-    setState((prevState) => ({ ...prevState, ...updates }));
+  const updateState = useCallback((updates: Partial<AppState> | ((prev: AppState) => Partial<AppState>)) => {
+    if (typeof updates === 'function') {
+      setState((prev) => ({ ...prev, ...updates(prev) }));
+    } else {
+      setState((prev) => ({ ...prev, ...updates }));
+    }
   }, [setState]);
 
   const handleDragStart = (component: RestaurantComponent) => {
@@ -335,58 +339,59 @@ export default function App() {
   };
 
   const handleDrop = (component: RestaurantComponent, parentId?: string) => {
-    const newComponent: CanvasComponent = {
-      id: `${component.id}-${Date.now()}`,
-      componentId: component.id,
-      name: component.name,
-      category: component.category,
-      props: { ...component.defaultProps, visible: true, locked: false },
-      position: canvasComponents.length,
-      ...(parentId && { parentId }),
-    };
+    updateState((prev) => {
+      const currentPageComponents = prev.pages.find((p) => p.id === prev.currentPageId)?.components || [];
+      
+      const newComponent: CanvasComponent = {
+        id: `${component.id}-${Date.now()}`,
+        componentId: component.id,
+        name: component.name,
+        category: component.category,
+        props: { ...component.defaultProps, visible: true, locked: false },
+        position: currentPageComponents.length,
+        ...(parentId && { parentId }),
+      };
 
-    if (parentId) {
-      // Add to parent's children array
-      const updatedPages = pages.map((page) => {
-        if (page.id !== currentPageId) return page;
-        
-        return {
-          ...page,
-          components: page.components.map((comp) => {
-            if (comp.id === parentId) {
-              return {
-                ...comp,
-                children: [...(comp.children || []), newComponent],
-              };
-            }
-            return comp;
-          }),
-        };
-      });
+      let updatedPages;
+      
+      if (parentId) {
+        // Add to parent's children array
+        updatedPages = prev.pages.map((page) => {
+          if (page.id !== prev.currentPageId) return page;
+          
+          return {
+            ...page,
+            components: page.components.map((comp) => {
+              if (comp.id === parentId) {
+                return {
+                  ...comp,
+                  children: [...(comp.children || []), newComponent],
+                };
+              }
+              return comp;
+            }),
+          };
+        });
+      } else {
+        // Add to page root level
+        updatedPages = prev.pages.map((page) =>
+          page.id === prev.currentPageId
+            ? { ...page, components: [...page.components, newComponent] }
+            : page
+        );
+      }
 
-      updateState({ 
+      // Track recently used component
+      addRecentComponent(component.id);
+      toast.success(`Added ${component.name}${parentId ? ' to container' : ''}`);
+      
+      return { 
         pages: updatedPages, 
         selectedComponentIds: [newComponent.id]
-      });
-    } else {
-      // Add to page root level
-      const updatedPages = pages.map((page) =>
-        page.id === currentPageId
-          ? { ...page, components: [...page.components, newComponent] }
-          : page
-      );
-
-      updateState({ 
-        pages: updatedPages, 
-        selectedComponentIds: [newComponent.id]
-      });
-    }
+      };
+    });
     
     setDraggedComponent(null);
-    
-    // Track recently used component
-    addRecentComponent(component.id);
-    toast.success(`Added ${component.name}${parentId ? ' to container' : ''}`);
   };
 
   const handleSelectComponent = (id: string | null, multiSelect = false) => {
