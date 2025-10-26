@@ -6,6 +6,7 @@ interface FreeformComponentWrapperProps {
   isSelected: boolean;
   onPositionChange: (id: string, x: number, y: number, width: number, height: number) => void;
   children: React.ReactNode;
+  zoom?: number;
 }
 
 export function FreeformComponentWrapper({
@@ -13,10 +14,12 @@ export function FreeformComponentWrapper({
   isSelected,
   onPositionChange,
   children,
+  zoom = 100,
 }: FreeformComponentWrapperProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [resizeDirection, setResizeDirection] = useState<string>('');
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0, componentX: 0, componentY: 0, componentWidth: 0, componentHeight: 0 });
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   // Default position if not set
@@ -35,39 +38,74 @@ export function FreeformComponentWrapper({
     e.stopPropagation();
     setIsDragging(true);
     setDragStart({
-      x: e.clientX - position.x,
-      y: e.clientY - position.y,
+      x: e.clientX,
+      y: e.clientY,
+      componentX: position.x,
+      componentY: position.y,
+      componentWidth: position.width,
+      componentHeight: position.height,
     });
   };
 
   const handleResizeMouseDown = (e: React.MouseEvent, direction: string) => {
     e.stopPropagation();
     setIsResizing(true);
+    setResizeDirection(direction);
     setDragStart({
       x: e.clientX,
       y: e.clientY,
+      componentX: position.x,
+      componentY: position.y,
+      componentWidth: position.width,
+      componentHeight: position.height,
     });
   };
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
+      const zoomFactor = zoom / 100;
+      
       if (isDragging && !isResizing) {
-        const newX = e.clientX - dragStart.x;
-        const newY = e.clientY - dragStart.y;
+        // Account for zoom when dragging
+        const deltaX = (e.clientX - dragStart.x) / zoomFactor;
+        const deltaY = (e.clientY - dragStart.y) / zoomFactor;
+        const newX = dragStart.componentX + deltaX;
+        const newY = dragStart.componentY + deltaY;
         onPositionChange(component.id, newX, newY, position.width, position.height);
       } else if (isResizing) {
-        const deltaX = e.clientX - dragStart.x;
-        const deltaY = e.clientY - dragStart.y;
-        const newWidth = Math.max(100, position.width + deltaX);
-        const newHeight = Math.max(50, position.height + deltaY);
-        onPositionChange(component.id, position.x, position.y, newWidth, newHeight);
-        setDragStart({ x: e.clientX, y: e.clientY });
+        // Account for zoom when resizing
+        const deltaX = (e.clientX - dragStart.x) / zoomFactor;
+        const deltaY = (e.clientY - dragStart.y) / zoomFactor;
+        
+        let newX = dragStart.componentX;
+        let newY = dragStart.componentY;
+        let newWidth = dragStart.componentWidth;
+        let newHeight = dragStart.componentHeight;
+        
+        // Handle different resize directions
+        if (resizeDirection.includes('e')) {
+          newWidth = Math.max(100, dragStart.componentWidth + deltaX);
+        }
+        if (resizeDirection.includes('w')) {
+          newWidth = Math.max(100, dragStart.componentWidth - deltaX);
+          newX = dragStart.componentX + (dragStart.componentWidth - newWidth);
+        }
+        if (resizeDirection.includes('s')) {
+          newHeight = Math.max(50, dragStart.componentHeight + deltaY);
+        }
+        if (resizeDirection.includes('n')) {
+          newHeight = Math.max(50, dragStart.componentHeight - deltaY);
+          newY = dragStart.componentY + (dragStart.componentHeight - newHeight);
+        }
+        
+        onPositionChange(component.id, newX, newY, newWidth, newHeight);
       }
     };
 
     const handleMouseUp = () => {
       setIsDragging(false);
       setIsResizing(false);
+      setResizeDirection('');
     };
 
     if (isDragging || isResizing) {
@@ -78,7 +116,7 @@ export function FreeformComponentWrapper({
         document.removeEventListener('mouseup', handleMouseUp);
       };
     }
-  }, [isDragging, isResizing, dragStart, position, component.id, onPositionChange]);
+  }, [isDragging, isResizing, resizeDirection, dragStart, position, component.id, onPositionChange, zoom]);
 
   return (
     <div

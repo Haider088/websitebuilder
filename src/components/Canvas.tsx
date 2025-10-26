@@ -296,6 +296,7 @@ export function Canvas({
                           component={component}
                           isSelected={selectedComponentIds.includes(component.id)}
                           onPositionChange={onComponentPositionChange}
+                          zoom={zoom}
                         >
                           {canvasComponent}
                         </FreeformComponentWrapper>
