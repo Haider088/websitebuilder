@@ -23,7 +23,9 @@ import {
   MoveUp,
   MoveDown,
   Copy,
-  Bot
+  Bot,
+  LayoutList,
+  LayoutGrid
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { cn } from './ui/utils';
@@ -68,6 +70,10 @@ interface ToolbarProps {
   onToggleLayers: () => void;
   onPreview: () => void;
   
+  // Layout mode
+  layoutMode?: 'stack' | 'freeform';
+  onToggleLayoutMode?: () => void;
+  
   // Dialog triggers
   onOpenTemplates: () => void;
   onOpenKeyboardShortcuts: () => void;
@@ -101,6 +107,8 @@ export function Toolbar({
   showLayersPanel,
   onToggleLayers,
   onPreview,
+  layoutMode = 'stack',
+  onToggleLayoutMode,
   onOpenTemplates,
   onOpenKeyboardShortcuts,
   onOpenVersionHistory,
@@ -470,6 +478,33 @@ export function Toolbar({
             </TooltipTrigger>
             <TooltipContent>Toggle layers panel</TooltipContent>
           </Tooltip>
+          
+          {onToggleLayoutMode && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onToggleLayoutMode}
+                  className={cn("gap-2", layoutMode === 'freeform' && "bg-accent")}
+                >
+                  {layoutMode === 'freeform' ? (
+                    <LayoutGrid className="w-4 h-4" />
+                  ) : (
+                    <LayoutList className="w-4 h-4" />
+                  )}
+                  <span className="hidden md:inline">
+                    {layoutMode === 'freeform' ? 'Freeform' : 'Stack'}
+                  </span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {layoutMode === 'freeform' 
+                  ? 'Switch to Stack Mode - components stack vertically' 
+                  : 'Switch to Freeform Mode - drag components anywhere'}
+              </TooltipContent>
+            </Tooltip>
+          )}
         </div>
       </div>
     </TooltipProvider>

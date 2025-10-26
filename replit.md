@@ -5,6 +5,29 @@ A modern, interactive website builder specifically designed for creating restaur
 
 ## Recent Changes
 
+### October 26, 2025 - Stack vs Freeform Layout Modes (In Progress)
+- **New Feature**: Added dual layout system for flexible page design
+  - Created `LayoutMode` type ('stack' | 'freeform')
+  - Added `layoutMode` property to Page interface with localStorage persistence
+  - Added `FreeformPosition` interface for absolute positioning (x, y, width, height)
+  - Added `freeformPosition` property to CanvasComponent
+- **Toolbar Enhancement**: Added Stack/Freeform toggle button
+  - Button shows current mode with icon (LayoutList for stack, LayoutGrid for freeform)
+  - Highlights when in freeform mode
+  - Shows helpful tooltip explaining each mode
+  - Persists mode selection across page reloads
+- **Stack Mode**: Traditional vertical layout (default)
+  - Components stack on top of each other with consistent spacing
+  - AI-friendly and predictable
+  - Perfect for beginners and content-heavy sites
+- **Freeform Mode**: Advanced absolute positioning (in progress)
+  - 12-column grid system for precise layouts
+  - Drag components anywhere on the canvas
+  - Resize with corner handles
+  - Snap-to-grid functionality
+  - Perfect for unique, professional designs
+- **Next Steps**: Complete freeform canvas rendering, drag-to-reposition, resize handles, and property inspector controls
+
 ### October 26, 2025 - Live Custom Component Rendering & Multi-Component Fix
 - **Critical Fix**: Fixed state management bug where only the last component appeared when AI added multiple components
   - Updated `useHistory` hook to support functional state updates

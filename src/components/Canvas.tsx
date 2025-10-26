@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Monitor, Tablet, Smartphone, ZoomIn, ZoomOut, Grid3x3, Plus, Info, HelpCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
-import { CanvasComponent as CanvasComponentType, DeviceType, RestaurantComponent } from '../types';
+import { CanvasComponent as CanvasComponentType, DeviceType, RestaurantComponent, LayoutMode } from '../types';
 import { CanvasComponent } from './CanvasComponent';
 import { Badge } from './ui/badge';
 import { ResponsiveGuide } from './ResponsiveGuide';
@@ -17,6 +17,7 @@ interface CanvasProps {
   deviceType?: DeviceType;
   onDeviceChange?: (device: DeviceType) => void;
   onOpenTemplates?: () => void;
+  layoutMode?: LayoutMode;
 }
 
 const deviceWidths = {
@@ -34,6 +35,7 @@ export function Canvas({
   deviceType: controlledDevice,
   onDeviceChange,
   onOpenTemplates,
+  layoutMode = 'stack',
 }: CanvasProps) {
   const [internalDevice, setInternalDevice] = useState<DeviceType>('desktop');
   const [zoom, setZoom] = useState(100);
@@ -203,8 +205,12 @@ export function Canvas({
               />
             )}
 
-            <div className={`relative z-10 space-y-6 ${
+            <div className={`relative z-10 ${
+              layoutMode === 'freeform' ? '' : 'space-y-6'
+            } ${
               device === 'mobile' ? 'p-4' : device === 'tablet' ? 'p-6' : 'p-8'
+            } ${
+              layoutMode === 'freeform' ? 'min-h-[1200px]' : ''
             }`}>
               {/* Responsive Design Info */}
               {device !== 'desktop' && showResponsiveInfo && (

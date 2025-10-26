@@ -66,6 +66,13 @@ export interface ResponsiveProps {
   tabletLayout?: LayoutType;
 }
 
+export interface FreeformPosition {
+  x: number; // grid columns (0-11)
+  y: number; // pixels from top
+  width: number; // grid columns (1-12)
+  height: number; // pixels
+}
+
 export interface CanvasComponent {
   id: string;
   componentId: string;
@@ -76,6 +83,7 @@ export interface CanvasComponent {
   interactions?: InteractionSettings;
   formConfig?: import('./forms').FormConfig;
   position: number;
+  freeformPosition?: FreeformPosition;
   children?: CanvasComponent[];
   parentId?: string;
   layoutConfig?: LayoutConfig;
@@ -84,12 +92,15 @@ export interface CanvasComponent {
   positionConfig?: PositionConfig;
 }
 
+export type LayoutMode = 'stack' | 'freeform';
+
 export interface Page {
   id: string;
   name: string;
   slug: string;
   components: CanvasComponent[];
   createdAt: number;
+  layoutMode?: LayoutMode;
   props?: {
     metaTitle?: string;
     metaDescription?: string;

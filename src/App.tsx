@@ -170,6 +170,13 @@ function loadStateFromStorage(): AppState | null {
           googleSiteVerification: '',
         };
       }
+      // Ensure all pages have layoutMode (default to 'stack')
+      if (parsed.pages && Array.isArray(parsed.pages)) {
+        parsed.pages = parsed.pages.map((page: any) => ({
+          ...page,
+          layoutMode: page.layoutMode || 'stack',
+        }));
+      }
       return parsed;
     }
   } catch (error) {
@@ -189,6 +196,7 @@ export default function App() {
         slug: 'home',
         components: [],
         createdAt: Date.now(),
+        layoutMode: 'stack',
       },
     ],
     currentPageId: 'home',
@@ -333,6 +341,21 @@ export default function App() {
       setState((prev) => ({ ...prev, ...updates }));
     }
   }, [setState]);
+
+  // Toggle layout mode for current page
+  const toggleLayoutMode = useCallback(() => {
+    updateState((prev) => {
+      const updatedPages = prev.pages.map((page) => {
+        if (page.id === prev.currentPageId) {
+          const newMode = page.layoutMode === 'freeform' ? 'stack' : 'freeform';
+          toast.success(`Switched to ${newMode === 'freeform' ? 'Freeform' : 'Stack'} Mode`);
+          return { ...page, layoutMode: newMode };
+        }
+        return page;
+      });
+      return { pages: updatedPages };
+    });
+  }, [updateState]);
 
   const handleDragStart = (component: RestaurantComponent) => {
     setDraggedComponent(component);
@@ -865,6 +888,8 @@ export default function App() {
         showLayersPanel={showLayersPanel}
         onToggleLayers={() => setShowLayersPanel(!showLayersPanel)}
         onPreview={() => setIsPreviewMode(true)}
+        layoutMode={currentPage?.layoutMode || 'stack'}
+        onToggleLayoutMode={toggleLayoutMode}
         onOpenTemplates={() => setShowTemplatesDialog(true)}
         onOpenKeyboardShortcuts={() => setShowKeyboardShortcutsDialog(true)}
         onOpenVersionHistory={() => setShowVersionHistoryDialog(true)}
@@ -989,6 +1014,7 @@ export default function App() {
             deviceType={canvasDevice}
             onDeviceChange={setCanvasDevice}
             onOpenTemplates={() => setShowTemplatesDialog(true)}
+            layoutMode={currentPage?.layoutMode || 'stack'}
           />
         </div>
         
