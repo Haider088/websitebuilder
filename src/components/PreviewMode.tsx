@@ -30,6 +30,16 @@ export function PreviewMode({
     mobile: 'w-[375px]',
   };
 
+  // Calculate canvas height for freeform mode
+  const canvasHeight = currentPage?.layoutMode === 'freeform'
+    ? Math.max(
+        1400,
+        ...components
+          .filter(c => c.freeformPosition)
+          .map(c => (c.freeformPosition!.y + c.freeformPosition!.height))
+      )
+    : undefined;
+
   return (
     <div className="fixed inset-0 bg-background z-50 flex flex-col">
       {/* Preview Header */}
@@ -110,7 +120,10 @@ export function PreviewMode({
                 </div>
               </div>
             ) : (
-              <div className={`w-full ${deviceType === 'mobile' ? 'overflow-hidden rounded-[1.5rem]' : ''}`}>
+              <div 
+                className={`w-full ${deviceType === 'mobile' ? 'overflow-hidden rounded-[1.5rem]' : ''} ${currentPage?.layoutMode === 'freeform' ? 'relative' : ''}`}
+                style={canvasHeight ? { minHeight: `${canvasHeight}px` } : undefined}
+              >
                 {components
                   .filter((c) => {
                     // Filter based on responsive visibility
@@ -120,15 +133,41 @@ export function PreviewMode({
                     const hideOnDesktop = c.responsiveProps?.hideOnDesktop && deviceType === 'desktop';
                     return !hideOnMobile && !hideOnTablet && !hideOnDesktop;
                   })
-                  .map((component) => (
-                    <CanvasComponentRenderer
-                      key={component.id}
-                      component={component}
-                      isSelected={false}
-                      deviceType={deviceType}
-                      onSelect={() => {}}
-                    />
-                  ))}
+                  .map((component) => {
+                    // For freeform mode, apply absolute positioning
+                    if (currentPage?.layoutMode === 'freeform' && component.freeformPosition) {
+                      return (
+                        <div
+                          key={component.id}
+                          className="absolute"
+                          style={{
+                            left: `${component.freeformPosition.x}px`,
+                            top: `${component.freeformPosition.y}px`,
+                            width: `${component.freeformPosition.width}px`,
+                            minHeight: `${component.freeformPosition.height}px`,
+                          }}
+                        >
+                          <CanvasComponentRenderer
+                            component={component}
+                            isSelected={false}
+                            deviceType={deviceType}
+                            onSelect={() => {}}
+                          />
+                        </div>
+                      );
+                    }
+                    
+                    // Stack mode - normal rendering
+                    return (
+                      <CanvasComponentRenderer
+                        key={component.id}
+                        component={component}
+                        isSelected={false}
+                        deviceType={deviceType}
+                        onSelect={() => {}}
+                      />
+                    );
+                  })}
               </div>
             )}
           </div>
