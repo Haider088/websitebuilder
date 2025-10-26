@@ -5,12 +5,15 @@ A modern, interactive website builder specifically designed for creating restaur
 
 ## Recent Changes
 
-### October 26, 2025 - Stack vs Freeform Layout Modes (In Progress)
+### October 26, 2025 - Stack vs Freeform Layout Modes ✅ COMPLETED
 - **New Feature**: Added dual layout system for flexible page design
   - Created `LayoutMode` type ('stack' | 'freeform')
   - Added `layoutMode` property to Page interface with localStorage persistence
   - Added `FreeformPosition` interface for absolute positioning (x, y, width, height)
   - Added `freeformPosition` property to CanvasComponent
+- **Canvas Sizing**: Set default canvas to 1400px × 1400px (width × height) with infinite downward expansion
+  - Works for both stack and freeform modes
+  - Automatically expands as components are added
 - **Toolbar Enhancement**: Added Stack/Freeform toggle button
   - Button shows current mode with icon (LayoutList for stack, LayoutGrid for freeform)
   - Highlights when in freeform mode
@@ -20,13 +23,21 @@ A modern, interactive website builder specifically designed for creating restaur
   - Components stack on top of each other with consistent spacing
   - AI-friendly and predictable
   - Perfect for beginners and content-heavy sites
-- **Freeform Mode**: Advanced absolute positioning (in progress)
-  - 12-column grid system for precise layouts
-  - Drag components anywhere on the canvas
-  - Resize with corner handles
-  - Snap-to-grid functionality
+- **Freeform Mode**: Advanced absolute positioning with full drag & resize
+  - 12-column grid overlay for precise visual alignment
+  - Drag components anywhere on the canvas - click and drag to reposition
+  - Resize with 4 corner handles (drag any corner to resize)
+  - All 4 corners work correctly (NW, NE, SW, SE)
+  - Zoom-aware calculations - drag/resize works correctly at any zoom level (50%, 100%, 200%)
+  - Default positioning for new components (cascading offset to prevent overlap)
   - Perfect for unique, professional designs
-- **Next Steps**: Complete freeform canvas rendering, drag-to-reposition, resize handles, and property inspector controls
+- **Technical Implementation**:
+  - Created `FreeformComponentWrapper` component for drag/resize interactions
+  - Implemented zoom-normalized mouse calculations (`zoomFactor = zoom / 100`)
+  - Directional resize logic handles all 4 corners with proper x/y adjustments
+  - State management persists freeform positions to localStorage
+  - Minimum size constraints (100px width, 50px height)
+- **Future Enhancements**: Canvas size configuration UI for freeform mode
 
 ### October 26, 2025 - Live Custom Component Rendering & Multi-Component Fix
 - **Critical Fix**: Fixed state management bug where only the last component appeared when AI added multiple components
