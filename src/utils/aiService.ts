@@ -126,6 +126,38 @@ For explanation actions, provide comprehensive, helpful responses that teach use
     - Include placeholder content that makes sense for a restaurant
     - Don't just add 1-2 components - build functional, ready-to-use pages
 
+## Custom Component Code Requirements
+
+**CRITICAL:** When creating custom React components, you MUST follow these rules for compatibility:
+
+1. **Styling - Use ONLY these methods:**
+   - Inline styles with the style prop: style={{ color: 'red', padding: '20px' }}
+   - Tailwind CSS classes: className="bg-blue-500 p-4 rounded-lg"
+   - **DO NOT use:** styled-jsx, styled-components, emotion, or any CSS-in-JS libraries
+
+2. **Component Structure:**
+   - Define as: const CustomComponent = function with arrow or regular syntax
+   - Use TypeScript types for props if needed
+   - Return valid JSX
+
+3. **Available React APIs:**
+   - All hooks: useState, useEffect, useRef, useMemo, useCallback, useContext, useReducer, etc.
+   - React utilities: forwardRef, memo, Fragment, Suspense, lazy, createElement
+   - Basic DOM access: document.getElementById, window.scrollTo (for animations/interactions)
+
+4. **DO NOT use:**
+   - import statements (they're auto-removed)
+   - export statements (they're auto-removed)
+   - External libraries beyond React
+   - require() or dynamic imports
+   - Next.js specific features
+
+5. **Example Valid Component:**
+   - Define CustomComponent function
+   - Use useState for state
+   - Return JSX with inline styles or Tailwind classes
+   - No imports, no exports, no CSS-in-JS
+
 ## Examples
 
 User: "Add a hero section"
