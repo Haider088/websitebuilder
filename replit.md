@@ -5,6 +5,18 @@ A modern, interactive website builder specifically designed for creating restaur
 
 ## Recent Changes
 
+### October 26, 2025 - Preview Mode Freeform Layout Support ✅ COMPLETED
+- **Critical Fix**: Preview mode now correctly displays freeform layouts
+  - Added layout mode detection to check if page is in 'freeform' or 'stack' mode
+  - Freeform pages now render with absolute positioning matching the canvas editor
+  - Components use their freeformPosition (x, y, width, height) in preview
+  - Dynamic canvas height calculation prevents content clipping for tall pages
+  - Stack mode continues to work as before with vertical layout
+- **Technical Implementation**:
+  - Calculates required canvas height: `Math.max(1400px, max(y + height))`
+  - Wraps freeform components in absolutely positioned divs
+  - Maintains responsive visibility filters for all device types
+
 ### October 26, 2025 - Invisible Border Resize Zones ✅ COMPLETED
 - **UX Enhancement**: Replaced visible resize handles with invisible border resize zones
   - Removed all visible dot handles for cleaner, professional appearance
