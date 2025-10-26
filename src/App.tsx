@@ -364,6 +364,8 @@ export default function App() {
   const handleDrop = (component: RestaurantComponent, parentId?: string) => {
     updateState((prev) => {
       const currentPageComponents = prev.pages.find((p) => p.id === prev.currentPageId)?.components || [];
+      const currentPage = prev.pages.find((p) => p.id === prev.currentPageId);
+      const isFreef = currentPage?.layoutMode === 'freeform';
       
       const newComponent: CanvasComponent = {
         id: `${component.id}-${Date.now()}`,
@@ -373,6 +375,15 @@ export default function App() {
         props: { ...component.defaultProps, visible: true, locked: false },
         position: currentPageComponents.length,
         ...(parentId && { parentId }),
+        // Add default freeform positioning for new components
+        ...(isFreef && !parentId && {
+          freeformPosition: {
+            x: 50 + (currentPageComponents.length * 20),
+            y: 50 + (currentPageComponents.length * 20),
+            width: 400,
+            height: 200,
+          },
+        }),
       };
 
       let updatedPages;
@@ -416,6 +427,29 @@ export default function App() {
     
     setDraggedComponent(null);
   };
+
+  const handleComponentPositionChange = useCallback((id: string, x: number, y: number, width: number, height: number) => {
+    updateState((prev) => {
+      const updatedPages = prev.pages.map((page) => {
+        if (page.id !== prev.currentPageId) return page;
+        
+        return {
+          ...page,
+          components: page.components.map((comp) => {
+            if (comp.id === id) {
+              return {
+                ...comp,
+                freeformPosition: { x, y, width, height },
+              };
+            }
+            return comp;
+          }),
+        };
+      });
+      
+      return { pages: updatedPages };
+    });
+  }, [updateState]);
 
   const handleSelectComponent = (id: string | null, multiSelect = false) => {
     if (id === null) {
@@ -1015,6 +1049,7 @@ export default function App() {
             onDeviceChange={setCanvasDevice}
             onOpenTemplates={() => setShowTemplatesDialog(true)}
             layoutMode={currentPage?.layoutMode || 'stack'}
+            onComponentPositionChange={handleComponentPositionChange}
           />
         </div>
         

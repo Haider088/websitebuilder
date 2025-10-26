@@ -4,6 +4,7 @@ import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
 import { CanvasComponent as CanvasComponentType, DeviceType, RestaurantComponent, LayoutMode } from '../types';
 import { CanvasComponent } from './CanvasComponent';
+import { FreeformComponentWrapper } from './FreeformComponentWrapper';
 import { Badge } from './ui/badge';
 import { ResponsiveGuide } from './ResponsiveGuide';
 import { EmptyState } from './EmptyState';
@@ -18,6 +19,7 @@ interface CanvasProps {
   onDeviceChange?: (device: DeviceType) => void;
   onOpenTemplates?: () => void;
   layoutMode?: LayoutMode;
+  onComponentPositionChange?: (id: string, x: number, y: number, width: number, height: number) => void;
 }
 
 const deviceWidths = {
@@ -36,6 +38,7 @@ export function Canvas({
   onDeviceChange,
   onOpenTemplates,
   layoutMode = 'stack',
+  onComponentPositionChange,
 }: CanvasProps) {
   const [internalDevice, setInternalDevice] = useState<DeviceType>('desktop');
   const [zoom, setZoom] = useState(100);
@@ -178,12 +181,13 @@ export function Canvas({
             )}
             
             <div
-              className={`bg-background shadow-lg transition-all duration-200 min-h-[600px] relative ${
+              className={`bg-background shadow-lg transition-all duration-200 relative ${
                 device === 'mobile' ? 'rounded-[3rem] border-[14px] border-gray-800' : 
                 device === 'tablet' ? 'rounded-[2rem] border-[12px] border-gray-700' : ''
               }`}
               style={{
-                width: deviceWidths[device],
+                width: device === 'desktop' ? '1400px' : deviceWidths[device],
+                minHeight: '1400px',
                 transform: `scale(${zoom / 100})`,
                 transformOrigin: 'top center',
               }}
@@ -192,15 +196,17 @@ export function Canvas({
               onDrop={handleDrop}
             >
             {/* Grid Overlay */}
-            {showGrid && (
+            {(showGrid || layoutMode === 'freeform') && (
               <div
-                className="absolute inset-0 pointer-events-none"
+                className="absolute inset-0 pointer-events-none z-0"
                 style={{
-                  backgroundImage: `
-                    linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px),
-                    linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px)
-                  `,
-                  backgroundSize: '20px 20px',
+                  backgroundImage: layoutMode === 'freeform' 
+                    ? `repeating-linear-gradient(to right, rgba(99, 102, 241, 0.1) 0px, rgba(99, 102, 241, 0.1) 1px, transparent 1px, transparent calc(100% / 12))`
+                    : `
+                      linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px)
+                    `,
+                  backgroundSize: layoutMode === 'freeform' ? '100% 100%' : '20px 20px',
                 }}
               />
             )}
@@ -263,7 +269,7 @@ export function Canvas({
                       );
                     }
                     
-                    return (
+                    const canvasComponent = (
                       <CanvasComponent
                         key={component.id}
                         component={component}
@@ -281,6 +287,22 @@ export function Canvas({
                         draggedComponent={draggedComponent}
                       />
                     );
+                    
+                    // Wrap in freeform wrapper if in freeform mode
+                    if (layoutMode === 'freeform' && onComponentPositionChange) {
+                      return (
+                        <FreeformComponentWrapper
+                          key={component.id}
+                          component={component}
+                          isSelected={selectedComponentIds.includes(component.id)}
+                          onPositionChange={onComponentPositionChange}
+                        >
+                          {canvasComponent}
+                        </FreeformComponentWrapper>
+                      );
+                    }
+                    
+                    return canvasComponent;
                   })}
                   
                   {/* Drop Zone at the end */}
