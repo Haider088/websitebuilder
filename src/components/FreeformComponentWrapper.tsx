@@ -51,6 +51,8 @@ export function FreeformComponentWrapper({
     const currentRight = x + width;
     const currentBottom = y + height;
     
+    const isDragging = direction === '';
+    
     // Check against all other components
     allComponents.forEach((otherComp) => {
       if (otherComp.id === component.id || !otherComp.freeformPosition) return;
@@ -59,8 +61,8 @@ export function FreeformComponentWrapper({
       const otherRight = other.x + other.width;
       const otherBottom = other.y + other.height;
       
-      // When resizing west edge or dragging
-      if (!direction || direction.includes('w') || direction === '') {
+      // When dragging or resizing west edge
+      if (isDragging || direction.includes('w')) {
         // Snap left edge to other's right edge
         if (Math.abs(x - otherRight) < SNAP_THRESHOLD) {
           if (direction.includes('w')) {
@@ -81,8 +83,8 @@ export function FreeformComponentWrapper({
         }
       }
       
-      // When resizing east edge or dragging
-      if (!direction || direction.includes('e') || direction === '') {
+      // When dragging or resizing east edge
+      if (isDragging || direction.includes('e')) {
         // Snap right edge to other's left edge
         if (Math.abs(currentRight - other.x) < SNAP_THRESHOLD) {
           if (direction.includes('e')) {
@@ -101,8 +103,8 @@ export function FreeformComponentWrapper({
         }
       }
       
-      // When resizing north edge or dragging
-      if (!direction || direction.includes('n') || direction === '') {
+      // When dragging or resizing north edge
+      if (isDragging || direction.includes('n')) {
         // Snap top edge to other's bottom edge
         if (Math.abs(y - otherBottom) < SNAP_THRESHOLD) {
           if (direction.includes('n')) {
@@ -123,8 +125,8 @@ export function FreeformComponentWrapper({
         }
       }
       
-      // When resizing south edge or dragging
-      if (!direction || direction.includes('s') || direction === '') {
+      // When dragging or resizing south edge
+      if (isDragging || direction.includes('s')) {
         // Snap bottom edge to other's top edge
         if (Math.abs(currentBottom - other.y) < SNAP_THRESHOLD) {
           if (direction.includes('s')) {
@@ -245,8 +247,8 @@ export function FreeformComponentWrapper({
   return (
     <div
       ref={wrapperRef}
-      className={`absolute group ${isDragging ? 'cursor-grabbing' : 'cursor-grab'} ${
-        isSelected ? 'ring-2 ring-primary ring-offset-2' : ''
+      className={`absolute group ${
+        isSelected ? 'ring-2 ring-primary' : ''
       }`}
       style={{
         left: `${position.x}px`,
@@ -258,42 +260,42 @@ export function FreeformComponentWrapper({
     >
       {children}
       
-      {/* Resize handles */}
+      {/* Invisible resize zones along borders */}
       {isSelected && (
         <>
-          {/* Corner handles */}
+          {/* Corner resize zones - 12px x 12px */}
           <div
-            className="resize-handle absolute -bottom-2 -right-2 w-4 h-4 bg-primary rounded-full cursor-nwse-resize border-2 border-background shadow-lg"
-            onMouseDown={(e) => handleResizeMouseDown(e, 'se')}
-          />
-          <div
-            className="resize-handle absolute -top-2 -left-2 w-4 h-4 bg-primary rounded-full cursor-nwse-resize border-2 border-background shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+            className="resize-handle absolute -top-1 -left-1 w-3 h-3 cursor-nwse-resize z-10"
             onMouseDown={(e) => handleResizeMouseDown(e, 'nw')}
           />
           <div
-            className="resize-handle absolute -top-2 -right-2 w-4 h-4 bg-primary rounded-full cursor-nesw-resize border-2 border-background shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+            className="resize-handle absolute -top-1 -right-1 w-3 h-3 cursor-nesw-resize z-10"
             onMouseDown={(e) => handleResizeMouseDown(e, 'ne')}
           />
           <div
-            className="resize-handle absolute -bottom-2 -left-2 w-4 h-4 bg-primary rounded-full cursor-nesw-resize border-2 border-background shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+            className="resize-handle absolute -bottom-1 -left-1 w-3 h-3 cursor-nesw-resize z-10"
             onMouseDown={(e) => handleResizeMouseDown(e, 'sw')}
           />
-          
-          {/* Edge handles */}
           <div
-            className="resize-handle absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-primary rounded-full cursor-ns-resize border-2 border-background shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+            className="resize-handle absolute -bottom-1 -right-1 w-3 h-3 cursor-nwse-resize z-10"
+            onMouseDown={(e) => handleResizeMouseDown(e, 'se')}
+          />
+          
+          {/* Edge resize zones - 8px wide zones along each edge */}
+          <div
+            className="resize-handle absolute -top-1 left-3 right-3 h-2 cursor-ns-resize z-10"
             onMouseDown={(e) => handleResizeMouseDown(e, 'n')}
           />
           <div
-            className="resize-handle absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-primary rounded-full cursor-ns-resize border-2 border-background shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+            className="resize-handle absolute -bottom-1 left-3 right-3 h-2 cursor-ns-resize z-10"
             onMouseDown={(e) => handleResizeMouseDown(e, 's')}
           />
           <div
-            className="resize-handle absolute top-1/2 -translate-y-1/2 -left-2 w-4 h-4 bg-primary rounded-full cursor-ew-resize border-2 border-background shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+            className="resize-handle absolute -left-1 top-3 bottom-3 w-2 cursor-ew-resize z-10"
             onMouseDown={(e) => handleResizeMouseDown(e, 'w')}
           />
           <div
-            className="resize-handle absolute top-1/2 -translate-y-1/2 -right-2 w-4 h-4 bg-primary rounded-full cursor-ew-resize border-2 border-background shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+            className="resize-handle absolute -right-1 top-3 bottom-3 w-2 cursor-ew-resize z-10"
             onMouseDown={(e) => handleResizeMouseDown(e, 'e')}
           />
         </>
