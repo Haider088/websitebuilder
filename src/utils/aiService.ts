@@ -136,9 +136,11 @@ For explanation actions, provide comprehensive, helpful responses that teach use
    - **DO NOT use:** styled-jsx, styled-components, emotion, or any CSS-in-JS libraries
 
 2. **Component Structure:**
-   - Define as: const CustomComponent = function with arrow or regular syntax
+   - MUST be named exactly "CustomComponent" (const CustomComponent = ...)
+   - Use arrow function or regular function syntax
    - Use TypeScript types for props if needed
    - Return valid JSX
+   - Example: const CustomComponent = () => { return <div>...</div>; };
 
 3. **Available React APIs:**
    - All hooks: useState, useEffect, useRef, useMemo, useCallback, useContext, useReducer, etc.

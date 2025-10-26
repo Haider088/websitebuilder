@@ -112,10 +112,6 @@ export function LiveComponentRenderer({ code, props = {} }: LiveComponentRendere
 
       const wrappedCode = `
         (function() {
-          'use strict';
-          const globalThis = undefined;
-          const eval = undefined;
-          const Function = undefined;
           ${ast.code}
           return typeof CustomComponent !== 'undefined' ? CustomComponent : null;
         })()
