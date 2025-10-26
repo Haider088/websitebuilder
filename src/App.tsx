@@ -327,8 +327,8 @@ export default function App() {
 
   // Helper to update state
   const updateState = useCallback((updates: Partial<AppState>) => {
-    setState({ ...state, ...updates });
-  }, [state, setState]);
+    setState((prevState) => ({ ...prevState, ...updates }));
+  }, [setState]);
 
   const handleDragStart = (component: RestaurantComponent) => {
     setDraggedComponent(component);
@@ -835,7 +835,7 @@ export default function App() {
 
   return (
     <div className="size-full flex flex-col">
-      <WelcomeDialog />
+      {/* <WelcomeDialog /> */}
       <Header 
         currentPageName={currentPage?.name || 'Home'}
         siteName={siteName}
