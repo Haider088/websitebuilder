@@ -5,6 +5,21 @@ A modern, interactive website builder specifically designed for creating restaur
 
 ## Recent Changes
 
+### October 26, 2025 - Invisible Border Resize Zones ✅ COMPLETED
+- **UX Enhancement**: Replaced visible resize handles with invisible border resize zones
+  - Removed all visible dot handles for cleaner, professional appearance
+  - **12px × 12px invisible corner zones** at each corner (NW, NE, SW, SE)
+  - **8px wide invisible edge zones** along top, bottom, left, and right borders
+  - Appropriate cursor changes when hovering near edges (nwse-resize, nesw-resize, ns-resize, ew-resize)
+  - Components can be resized by dragging the border itself
+  - Selection still shows a visible ring indicator
+- **Snapping Logic Fix**: Simplified and debugged magnetic snapping
+  - Introduced explicit `isDragging` boolean flag for clearer logic
+  - Removed redundant direction checks (`!direction || direction === ''`)
+  - When dragging: only adjusts x/y position (never width/height)
+  - When resizing: only adjusts edges/dimensions being manipulated
+  - Snapping now works correctly during both drag and resize operations
+
 ### October 26, 2025 - Stack vs Freeform Layout Modes ✅ COMPLETED
 - **New Feature**: Added dual layout system for flexible page design
   - Created `LayoutMode` type ('stack' | 'freeform')
@@ -26,8 +41,9 @@ A modern, interactive website builder specifically designed for creating restaur
 - **Freeform Mode**: Advanced absolute positioning with full drag & resize
   - 12-column grid overlay for precise visual alignment
   - Drag components anywhere on the canvas - click and drag to reposition
-  - **8 resize handles** - 4 corners (NW, NE, SW, SE) + 4 edges (N, S, E, W)
-  - Each handle resizes in its intended direction with proper anchor points
+  - **Border-based resizing** - Invisible zones along borders for clean, professional look
+  - **8-direction resize** - 4 corners (NW, NE, SW, SE) + 4 edges (N, S, E, W)
+  - Each direction resizes with proper anchor points
   - **Magnetic snapping** - Components snap to each other when within 10px threshold
     - Snaps to all 8 edges: left/right to left/right, top/bottom to top/bottom
     - Works during both dragging and resizing
@@ -39,10 +55,10 @@ A modern, interactive website builder specifically designed for creating restaur
 - **Technical Implementation**:
   - Created `FreeformComponentWrapper` component for drag/resize interactions
   - Implemented zoom-normalized mouse calculations (`zoomFactor = zoom / 100`)
-  - Directional resize logic handles all 4 corners with proper x/y adjustments
+  - Directional resize logic handles all 8 directions with proper x/y adjustments
+  - Invisible resize zones positioned along component perimeter
   - State management persists freeform positions to localStorage
   - Minimum size constraints (100px width, 50px height)
-- **Future Enhancements**: Canvas size configuration UI for freeform mode
 
 ### October 26, 2025 - Live Custom Component Rendering & Multi-Component Fix
 - **Critical Fix**: Fixed state management bug where only the last component appeared when AI added multiple components
