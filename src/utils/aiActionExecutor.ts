@@ -185,6 +185,15 @@ function executeModifyComponent(data: ModifyComponentData, context: ExecutionCon
       }
     }
     
+    // For custom components, preserve the code property
+    if (component.componentId === 'custom' && component.props?.code) {
+      processedProps.code = component.props.code;
+      // Also preserve description if not being updated
+      if (!processedProps.description && component.props.description) {
+        processedProps.description = component.props.description;
+      }
+    }
+    
     Object.assign(updates, processedProps);
   }
   
