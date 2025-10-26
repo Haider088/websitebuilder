@@ -3,7 +3,23 @@
 ## Project Overview
 A modern, interactive website builder specifically designed for creating restaurant websites. Built with React, TypeScript, Vite, and Tailwind CSS. Features include drag-and-drop components, templates, AI assistance, form builder, and more.
 
-## Recent Changes (October 25, 2025)
+## Recent Changes
+
+### October 26, 2025 - Live Custom Component Rendering & Multi-Component Fix
+- **Critical Fix**: Fixed state management bug where only the last component appeared when AI added multiple components
+  - Updated `useHistory` hook to support functional state updates
+  - Refactored `handleDrop` to use functional updates, preventing stale state issues
+  - All AI-generated actions now properly accumulate instead of overwriting
+- **New Feature**: Live Custom Component Rendering
+  - Installed @babel/standalone for runtime JSX/TypeScript compilation
+  - Created `LiveComponentRenderer` that compiles and executes AI-generated React code in real-time
+  - AST-based import/export removal handles all module syntax patterns
+  - Comprehensive React API support (all hooks, forwardRef, memo, Fragment, etc.)
+  - Error boundaries for both compilation and runtime errors with detailed debugging
+  - Security: Limited global scope access, shadowed dangerous globals (window, document, etc.)
+- **Note**: Custom components work for demo/development. For production use with untrusted code, consider iframe/Web Worker sandboxing
+
+### October 25, 2025 - Initial Setup
 - **Initial Replit Setup**: Configured the project to run in the Replit environment
 - Created TypeScript configuration files (`tsconfig.json`, `tsconfig.node.json`)
 - Created Tailwind CSS configuration (`tailwind.config.js`)
@@ -31,14 +47,15 @@ A modern, interactive website builder specifically designed for creating restaur
 
 ### Key Features
 1. **Component Library**: Pre-built restaurant-specific components (Menu Grid, Menu List, Reservation Form, Opening Hours, Contact Info)
-2. **AI Assistant**: Integration with Google's Generative AI for content suggestions
-3. **Template System**: Pre-made page templates for quick setup
-4. **Form Builder**: Custom form creation with validation
-5. **Responsive Design**: Mobile-first approach with responsive guides
-6. **Analytics Dashboard**: Track website performance
-7. **Version History**: Track and restore previous versions
-8. **Asset Manager**: Manage images and media
-9. **Keyboard Shortcuts**: Productivity features for faster workflow
+2. **AI Assistant**: Integration with Google's Generative AI for content suggestions and multi-component creation
+3. **Live Custom Components**: AI-generated React components compile and render in real-time using Babel standalone
+4. **Template System**: Pre-made page templates for quick setup
+5. **Form Builder**: Custom form creation with validation
+6. **Responsive Design**: Mobile-first approach with responsive guides
+7. **Analytics Dashboard**: Track website performance
+8. **Version History**: Track and restore previous versions
+9. **Asset Manager**: Manage images and media
+10. **Keyboard Shortcuts**: Productivity features for faster workflow
 
 ### Project Structure
 ```
