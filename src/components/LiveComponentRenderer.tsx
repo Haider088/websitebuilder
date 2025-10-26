@@ -60,10 +60,12 @@ export function LiveComponentRenderer({ code, props = {} }: LiveComponentRendere
       setError(null);
       setComponentError(null);
       
+      const BabelTypes = (Babel as any).types;
+      
       const ast = Babel.transform(code, {
         presets: ['react', 'typescript'],
         plugins: [
-          function() {
+          function({ types: t }: any) {
             return {
               visitor: {
                 ImportDeclaration(path: any) {
@@ -72,7 +74,6 @@ export function LiveComponentRenderer({ code, props = {} }: LiveComponentRendere
                 ExportDefaultDeclaration(path: any) {
                   const declaration = path.node.declaration;
                   if (declaration) {
-                    const t = (Babel as any).types || require('@babel/types');
                     let expression = declaration;
                     
                     if (t.isFunctionDeclaration(declaration) || t.isClassDeclaration(declaration)) {
@@ -112,8 +113,6 @@ export function LiveComponentRenderer({ code, props = {} }: LiveComponentRendere
       const wrappedCode = `
         (function() {
           'use strict';
-          const window = undefined;
-          const document = undefined;
           const globalThis = undefined;
           const eval = undefined;
           const Function = undefined;
