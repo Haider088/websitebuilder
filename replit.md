@@ -26,8 +26,13 @@ A modern, interactive website builder specifically designed for creating restaur
 - **Freeform Mode**: Advanced absolute positioning with full drag & resize
   - 12-column grid overlay for precise visual alignment
   - Drag components anywhere on the canvas - click and drag to reposition
-  - Resize with 4 corner handles (drag any corner to resize)
-  - All 4 corners work correctly (NW, NE, SW, SE)
+  - **8 resize handles** - 4 corners (NW, NE, SW, SE) + 4 edges (N, S, E, W)
+  - Each handle resizes in its intended direction with proper anchor points
+  - **Magnetic snapping** - Components snap to each other when within 10px threshold
+    - Snaps to all 8 edges: left/right to left/right, top/bottom to top/bottom
+    - Works during both dragging and resizing
+    - Direction-aware: maintains anchored edges while snapping active edges
+    - Components don't move together after snapping (independent positioning)
   - Zoom-aware calculations - drag/resize works correctly at any zoom level (50%, 100%, 200%)
   - Default positioning for new components (cascading offset to prevent overlap)
   - Perfect for unique, professional designs
