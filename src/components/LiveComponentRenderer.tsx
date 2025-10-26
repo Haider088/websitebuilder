@@ -110,11 +110,13 @@ export function LiveComponentRenderer({ code, props = {} }: LiveComponentRendere
         throw new Error('Compilation produced no output');
       }
 
+      // Try to extract component name from the code
+      const componentNameMatch = ast.code.match(/(?:const|let|var|function)\s+([A-Z][a-zA-Z0-9]*)\s*=/);
+      const componentName = componentNameMatch ? componentNameMatch[1] : 'CustomComponent';
+      
       const wrappedCode = `
-        (function() {
-          ${ast.code}
-          return typeof CustomComponent !== 'undefined' ? CustomComponent : null;
-        })()
+        ${ast.code}
+        return typeof ${componentName} !== 'undefined' ? ${componentName} : null;
       `;
 
       const safeGlobals = {
