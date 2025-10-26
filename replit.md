@@ -8,17 +8,19 @@ A modern, interactive website builder specifically designed for creating restaur
 ### October 26, 2025 - Invisible Border Resize Zones ✅ COMPLETED
 - **UX Enhancement**: Replaced visible resize handles with invisible border resize zones
   - Removed all visible dot handles for cleaner, professional appearance
-  - **12px × 12px invisible corner zones** at each corner (NW, NE, SW, SE)
-  - **8px wide invisible edge zones** along top, bottom, left, and right borders
-  - Appropriate cursor changes when hovering near edges (nwse-resize, nesw-resize, ns-resize, ew-resize)
-  - Components can be resized by dragging the border itself
-  - Selection still shows a visible ring indicator
-- **Snapping Logic Fix**: Simplified and debugged magnetic snapping
+  - **16px × 16px invisible corner zones** at each corner (NW, NE, SW, SE)
+  - **16px thick invisible edge zones** along top, bottom, left, and right borders
+  - Continuous gap-free coverage - corners positioned at -8px, edges abutting at +8px
+  - Cursor changes automatically when hovering over borders (nwse-resize, nesw-resize, ns-resize, ew-resize)
+  - Components can be resized by dragging the border itself - no visible handles needed
+  - Selection shows only a clean ring indicator
+- **Snapping Logic Fix**: Simplified and debugged magnetic snapping in all directions
   - Introduced explicit `isDragging` boolean flag for clearer logic
-  - Removed redundant direction checks (`!direction || direction === ''`)
+  - Removed redundant direction checks for cleaner code
   - When dragging: only adjusts x/y position (never width/height)
   - When resizing: only adjusts edges/dimensions being manipulated
-  - Snapping now works correctly during both drag and resize operations
+  - Snapping works perfectly in all directions (left/right AND top/bottom) during both drag and resize
+  - Verified with console logging and manual testing
 
 ### October 26, 2025 - Stack vs Freeform Layout Modes ✅ COMPLETED
 - **New Feature**: Added dual layout system for flexible page design
