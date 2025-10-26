@@ -4,6 +4,7 @@
       "type": "module",
       "private": true,
       "dependencies": {
+            "@babel/standalone": "^7.28.5",
             "@google/generative-ai": "*",
             "@radix-ui/react-accordion": "^1.2.3",
             "@radix-ui/react-alert-dialog": "^1.1.6",
