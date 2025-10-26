@@ -58,27 +58,106 @@ export function LiveComponentRenderer({ code, props = {} }: LiveComponentRendere
   const CompiledComponent = useMemo(() => {
     try {
       setError(null);
+      setComponentError(null);
       
+      const ast = Babel.transform(code, {
+        presets: ['react', 'typescript'],
+        plugins: [
+          function() {
+            return {
+              visitor: {
+                ImportDeclaration(path: any) {
+                  path.remove();
+                },
+                ExportDefaultDeclaration(path: any) {
+                  const declaration = path.node.declaration;
+                  if (declaration) {
+                    const t = (Babel as any).types || require('@babel/types');
+                    let expression = declaration;
+                    
+                    if (t.isFunctionDeclaration(declaration) || t.isClassDeclaration(declaration)) {
+                      expression = t.toExpression(declaration);
+                    }
+                    
+                    path.replaceWith(
+                      t.variableDeclaration('const', [
+                        t.variableDeclarator(
+                          t.identifier('CustomComponent'),
+                          expression
+                        )
+                      ])
+                    );
+                  } else {
+                    path.remove();
+                  }
+                },
+                ExportNamedDeclaration(path: any) {
+                  if (path.node.declaration) {
+                    path.replaceWith(path.node.declaration);
+                  } else {
+                    path.remove();
+                  }
+                }
+              }
+            };
+          }
+        ],
+        filename: 'custom-component.tsx',
+      });
+
+      if (!ast.code) {
+        throw new Error('Compilation produced no output');
+      }
+
       const wrappedCode = `
         (function() {
-          ${code}
+          'use strict';
+          const window = undefined;
+          const document = undefined;
+          const globalThis = undefined;
+          const eval = undefined;
+          const Function = undefined;
+          ${ast.code}
           return typeof CustomComponent !== 'undefined' ? CustomComponent : null;
         })()
       `;
 
-      const compiledCode = Babel.transform(wrappedCode, {
-        presets: ['react', 'typescript'],
-        filename: 'custom-component.tsx',
-      }).code;
+      const safeGlobals = {
+        React,
+        useState: React.useState,
+        useEffect: React.useEffect,
+        useRef: React.useRef,
+        useMemo: React.useMemo,
+        useCallback: React.useCallback,
+        useContext: React.useContext,
+        useReducer: React.useReducer,
+        useLayoutEffect: React.useLayoutEffect,
+        useImperativeHandle: React.useImperativeHandle,
+        useDebugValue: React.useDebugValue,
+        useDeferredValue: (React as any).useDeferredValue,
+        useTransition: (React as any).useTransition,
+        useId: (React as any).useId,
+        useSyncExternalStore: (React as any).useSyncExternalStore,
+        useInsertionEffect: (React as any).useInsertionEffect,
+        forwardRef: React.forwardRef,
+        memo: React.memo,
+        createContext: React.createContext,
+        Fragment: React.Fragment,
+        Suspense: React.Suspense,
+        lazy: React.lazy,
+        startTransition: (React as any).startTransition,
+        createElement: React.createElement,
+        cloneElement: React.cloneElement,
+        isValidElement: React.isValidElement,
+      };
 
-      if (!compiledCode) {
-        throw new Error('Compilation produced no output');
-      }
-
-      const ComponentConstructor = new Function('React', compiledCode)(React);
+      const ComponentConstructor = new Function(
+        ...Object.keys(safeGlobals),
+        wrappedCode
+      )(...Object.values(safeGlobals));
 
       if (!ComponentConstructor) {
-        throw new Error('Component was not exported correctly. Make sure to export as "CustomComponent"');
+        throw new Error('Component was not exported correctly. Make sure to define "CustomComponent"');
       }
 
       return ComponentConstructor;
@@ -119,7 +198,10 @@ export function LiveComponentRenderer({ code, props = {} }: LiveComponentRendere
   }
 
   return (
-    <CustomComponentErrorBoundary onError={handleComponentError}>
+    <CustomComponentErrorBoundary 
+      key={code}
+      onError={handleComponentError}
+    >
       <CompiledComponent {...props} />
     </CustomComponentErrorBoundary>
   );
