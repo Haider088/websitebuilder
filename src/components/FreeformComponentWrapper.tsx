@@ -107,6 +107,7 @@ export function FreeformComponentWrapper({
       if (isDragging || direction.includes('n')) {
         // Snap top edge to other's bottom edge
         if (Math.abs(y - otherBottom) < SNAP_THRESHOLD) {
+          console.log('Snapping top to bottom!', y, otherBottom);
           if (direction.includes('n')) {
             snappedHeight = height + (y - otherBottom);
             snappedY = otherBottom;
@@ -116,6 +117,7 @@ export function FreeformComponentWrapper({
         }
         // Snap top edge to other's top edge
         if (Math.abs(y - other.y) < SNAP_THRESHOLD) {
+          console.log('Snapping top to top!', y, other.y);
           if (direction.includes('n')) {
             snappedHeight = height + (y - other.y);
             snappedY = other.y;
@@ -129,6 +131,7 @@ export function FreeformComponentWrapper({
       if (isDragging || direction.includes('s')) {
         // Snap bottom edge to other's top edge
         if (Math.abs(currentBottom - other.y) < SNAP_THRESHOLD) {
+          console.log('Snapping bottom to top!', currentBottom, other.y);
           if (direction.includes('s')) {
             snappedHeight = other.y - y;
           } else {
@@ -137,6 +140,7 @@ export function FreeformComponentWrapper({
         }
         // Snap bottom edge to other's bottom edge
         if (Math.abs(currentBottom - otherBottom) < SNAP_THRESHOLD) {
+          console.log('Snapping bottom to bottom!', currentBottom, otherBottom);
           if (direction.includes('s')) {
             snappedHeight = otherBottom - y;
           } else {
@@ -260,42 +264,42 @@ export function FreeformComponentWrapper({
     >
       {children}
       
-      {/* Invisible resize zones along borders */}
+      {/* Invisible resize zones along borders - larger hit areas */}
       {isSelected && (
         <>
-          {/* Corner resize zones - 12px x 12px */}
+          {/* Corner resize zones - 20px x 20px for easy clicking */}
           <div
-            className="resize-handle absolute -top-1 -left-1 w-3 h-3 cursor-nwse-resize z-10"
+            className="resize-handle absolute top-0 left-0 w-5 h-5 cursor-nwse-resize z-10 pointer-events-auto"
             onMouseDown={(e) => handleResizeMouseDown(e, 'nw')}
           />
           <div
-            className="resize-handle absolute -top-1 -right-1 w-3 h-3 cursor-nesw-resize z-10"
+            className="resize-handle absolute top-0 right-0 w-5 h-5 cursor-nesw-resize z-10 pointer-events-auto"
             onMouseDown={(e) => handleResizeMouseDown(e, 'ne')}
           />
           <div
-            className="resize-handle absolute -bottom-1 -left-1 w-3 h-3 cursor-nesw-resize z-10"
+            className="resize-handle absolute bottom-0 left-0 w-5 h-5 cursor-nesw-resize z-10 pointer-events-auto"
             onMouseDown={(e) => handleResizeMouseDown(e, 'sw')}
           />
           <div
-            className="resize-handle absolute -bottom-1 -right-1 w-3 h-3 cursor-nwse-resize z-10"
+            className="resize-handle absolute bottom-0 right-0 w-5 h-5 cursor-nwse-resize z-10 pointer-events-auto"
             onMouseDown={(e) => handleResizeMouseDown(e, 'se')}
           />
           
-          {/* Edge resize zones - 8px wide zones along each edge */}
+          {/* Edge resize zones - 16px wide zones along each edge */}
           <div
-            className="resize-handle absolute -top-1 left-3 right-3 h-2 cursor-ns-resize z-10"
+            className="resize-handle absolute top-0 left-5 right-5 h-4 cursor-ns-resize z-10 pointer-events-auto"
             onMouseDown={(e) => handleResizeMouseDown(e, 'n')}
           />
           <div
-            className="resize-handle absolute -bottom-1 left-3 right-3 h-2 cursor-ns-resize z-10"
+            className="resize-handle absolute bottom-0 left-5 right-5 h-4 cursor-ns-resize z-10 pointer-events-auto"
             onMouseDown={(e) => handleResizeMouseDown(e, 's')}
           />
           <div
-            className="resize-handle absolute -left-1 top-3 bottom-3 w-2 cursor-ew-resize z-10"
+            className="resize-handle absolute left-0 top-5 bottom-5 w-4 cursor-ew-resize z-10 pointer-events-auto"
             onMouseDown={(e) => handleResizeMouseDown(e, 'w')}
           />
           <div
-            className="resize-handle absolute -right-1 top-3 bottom-3 w-2 cursor-ew-resize z-10"
+            className="resize-handle absolute right-0 top-5 bottom-5 w-4 cursor-ew-resize z-10 pointer-events-auto"
             onMouseDown={(e) => handleResizeMouseDown(e, 'e')}
           />
         </>
