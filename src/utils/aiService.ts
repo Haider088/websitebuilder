@@ -154,7 +154,22 @@ For explanation actions, provide comprehensive, helpful responses that teach use
    - require() or dynamic imports
    - Next.js specific features
 
-5. **Example Valid Component:**
+5. **For Animations (CRITICAL):**
+   - When using requestAnimationFrame, ALWAYS create a continuous loop
+   - Pattern: Call requestAnimationFrame inside the callback function itself
+   - WRONG: useEffect(() => { requestAnimationFrame(() => { update() }) }, [deps])
+   - RIGHT: useEffect(() => { 
+       const animate = () => {
+         update();
+         requestAnimationFrame(animate);
+       };
+       const id = requestAnimationFrame(animate);
+       return () => cancelAnimationFrame(id);
+     }, [])
+   - Put dependencies in dependency array only if you want animation to restart
+   - For continuous animations, use empty array [] to run once and loop forever
+
+6. **Example Valid Component:**
    - Define CustomComponent function
    - Use useState for state
    - Return JSX with inline styles or Tailwind classes
