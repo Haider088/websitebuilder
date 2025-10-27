@@ -5,6 +5,35 @@ A modern, interactive website builder specifically designed for creating restaur
 
 ## Recent Changes
 
+### October 27, 2025 - AI Vision: Screenshot-Based Feedback ✅ COMPLETED
+- **New Feature**: AI can now see what it creates using Gemini's vision capabilities
+  - Added camera button (📸) in AI Assistant input area
+  - Click the camera button to capture a screenshot of the canvas
+  - Screenshot automatically attaches to your next message
+  - AI receives both your text prompt AND the visual screenshot
+  - AI can analyze layouts, colors, spacing, and provide visual feedback
+- **How It Works**:
+  - Uses html2canvas to capture the canvas area
+  - Converts screenshot to base64 PNG format
+  - Sends to Gemini 2.0 Flash with multimodal support (text + image)
+  - AI can see exactly what you see and provide better suggestions
+- **Use Cases**:
+  - "What do you think of this layout?" - AI sees and critiques the design
+  - "Make this look better" - AI understands the current state
+  - "Fix the spacing" - AI can see spacing issues
+  - "Add complementary colors" - AI sees existing colors
+- **Technical Implementation**:
+  - Modified `sendMessage()` in aiService.ts to accept optional screenshot parameter
+  - Updated useAI hook to pass screenshots through to AI service
+  - Added `data-canvas-area` attribute to Canvas component for targeting
+  - Screenshot preview shows in AI input with remove button
+  - Camera button changes color when screenshot is attached
+- **User Experience**: 
+  - Small camera icon above send button
+  - Screenshot preview shows as thumbnail when captured
+  - Can remove screenshot before sending
+  - Indicator shows "📸 Screenshot attached - AI will see what you created"
+
 ### October 26, 2025 - Preview Mode Freeform Layout Support ✅ COMPLETED
 - **Critical Fix**: Preview mode now correctly displays freeform layouts
   - Added layout mode detection to check if page is in 'freeform' or 'stack' mode
