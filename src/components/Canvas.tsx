@@ -181,6 +181,7 @@ export function Canvas({
             )}
             
             <div
+              data-canvas-area="true"
               className={`bg-background shadow-lg transition-all duration-200 relative ${
                 device === 'mobile' ? 'rounded-[3rem] border-[14px] border-gray-800' : 
                 device === 'tablet' ? 'rounded-[2rem] border-[12px] border-gray-700' : ''

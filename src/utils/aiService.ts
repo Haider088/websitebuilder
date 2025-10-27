@@ -273,7 +273,8 @@ Remember: Restaurant owners are non-technical. Be clear, helpful, and safe.`;
 export async function sendMessage(
   message: string,
   context: AIContext,
-  conversationHistory: Array<{ role: 'user' | 'assistant'; content: string }>
+  conversationHistory: Array<{ role: 'user' | 'assistant'; content: string }>,
+  screenshot?: string
 ): Promise<AIResponse> {
   if (!genAI) {
     throw new Error('AI not initialized. Please add your Gemini API key to .env file.');
@@ -311,10 +312,12 @@ ${context.currentComponents.length === 0
   }).join('\\n')
 }
 
-**Important:** When modifying components, use the INSTANCE ID (e.g., "${context.currentComponents[0]?.id || 'hero-1234567890'}") or the TYPE (e.g., "${context.currentComponents[0]?.componentId || 'hero'}"). The system will find the component by either.
+**Important:** When modifying components, use the INSTANCE ID (e.g., "${context.currentComponents[0]?.id || 'hero-1734567890'}") or the TYPE (e.g., "${context.currentComponents[0]?.componentId || 'hero'}"). The system will find the component by either.
 
 **Recent Actions:**
 ${context.recentActions.slice(-5).join('\\n') || 'None'}
+
+${screenshot ? '**Visual Context:** I have included a screenshot showing what the current page looks like. Please analyze it and provide feedback or suggestions based on what you see.' : ''}
 
 **User Request:**
 ${message}
@@ -340,7 +343,20 @@ ${message}
       ],
     });
 
-    const result = await chat.sendMessage(contextMessage);
+    // Build message parts (text + optional screenshot)
+    const messageParts: any[] = [{ text: contextMessage }];
+    if (screenshot) {
+      // Remove data URL prefix if present
+      const base64Data = screenshot.replace(/^data:image\/\w+;base64,/, '');
+      messageParts.push({
+        inlineData: {
+          data: base64Data,
+          mimeType: 'image/png'
+        }
+      });
+    }
+
+    const result = await chat.sendMessage(messageParts);
     const response = result.response;
     const text = response.text();
 

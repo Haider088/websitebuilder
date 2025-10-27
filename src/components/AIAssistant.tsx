@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Bot, Send, X, Sparkles, AlertTriangle, CheckCircle, Loader2, Lightbulb } from 'lucide-react';
+import { Bot, Send, X, Sparkles, AlertTriangle, CheckCircle, Loader2, Lightbulb, Camera } from 'lucide-react';
 import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
 import { Textarea } from './ui/textarea';
@@ -20,7 +20,7 @@ interface AIAssistantProps {
   isLoading: boolean;
   isAvailable: boolean;
   suggestions: string[];
-  onSendMessage: (message: string) => void;
+  onSendMessage: (message: string, screenshot?: string) => void;
   onExecuteAction: (messageId: string, actions: AIAction[]) => void;
   onUseSuggestion: (suggestion: string) => void;
 }
@@ -37,6 +37,8 @@ export function AIAssistant({
   onUseSuggestion,
 }: AIAssistantProps) {
   const [input, setInput] = useState('');
+  const [screenshot, setScreenshot] = useState<string | null>(null);
+  const [isCapturing, setIsCapturing] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -57,11 +59,41 @@ export function AIAssistant({
     }
   }, [open]);
 
+  const handleCaptureScreenshot = async () => {
+    setIsCapturing(true);
+    try {
+      const html2canvas = (await import('html2canvas')).default;
+      
+      // Try to find the canvas area
+      const canvasArea = document.querySelector('[data-canvas-area]') as HTMLElement || 
+                        document.querySelector('.canvas-wrapper') as HTMLElement ||
+                        document.getElementById('canvas-root');
+      
+      if (canvasArea) {
+        const canvas = await html2canvas(canvasArea, {
+          scale: 0.5,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+        });
+        
+        const dataUrl = canvas.toDataURL('image/png');
+        setScreenshot(dataUrl);
+      }
+    } catch (error) {
+      console.error('Failed to capture screenshot:', error);
+    } finally {
+      setIsCapturing(false);
+    }
+  };
+
   const handleSend = () => {
     if (!input.trim() || isLoading) return;
     
-    onSendMessage(input.trim());
+    onSendMessage(input.trim(), screenshot || undefined);
     setInput('');
+    setScreenshot(null);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -183,6 +215,20 @@ export function AIAssistant({
 
       {/* Input */}
       <div className="p-4 border-t border-border bg-muted/30">
+        {screenshot && (
+          <div className="mb-2 relative">
+            <img src={screenshot} alt="Screenshot preview" className="w-full h-20 object-cover rounded border border-border" />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-1 right-1 h-6 w-6 bg-background/80 hover:bg-background"
+              onClick={() => setScreenshot(null)}
+            >
+              <X className="w-3 h-3" />
+            </Button>
+            <Badge className="absolute bottom-1 left-1 text-xs">Screenshot attached 📸</Badge>
+          </div>
+        )}
         <div className="flex gap-2">
           <Textarea
             ref={inputRef}
@@ -193,21 +239,37 @@ export function AIAssistant({
             className="min-h-[60px] max-h-[120px] resize-none"
             disabled={!isAvailable || isLoading}
           />
-          <Button
-            onClick={handleSend}
-            disabled={!input.trim() || !isAvailable || isLoading}
-            size="icon"
-            className="shrink-0 h-[60px] w-[60px]"
-          >
-            {isLoading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <Send className="w-5 h-5" />
-            )}
-          </Button>
+          <div className="flex flex-col gap-2">
+            <Button
+              onClick={handleCaptureScreenshot}
+              disabled={!isAvailable || isLoading || isCapturing}
+              size="icon"
+              variant="outline"
+              className="shrink-0 h-[28px] w-[60px]"
+              title="Capture screenshot and show to AI"
+            >
+              {isCapturing ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Camera className={cn("w-4 h-4", screenshot && "text-primary")} />
+              )}
+            </Button>
+            <Button
+              onClick={handleSend}
+              disabled={!input.trim() || !isAvailable || isLoading}
+              size="icon"
+              className="shrink-0 h-[28px] w-[60px]"
+            >
+              {isLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Send className="w-4 h-4" />
+              )}
+            </Button>
+          </div>
         </div>
         <p className="text-xs text-muted-foreground mt-2">
-          Press Enter to send, Shift+Enter for new line
+          {screenshot ? '📸 Screenshot attached - AI will see what you created' : 'Press Enter to send, Shift+Enter for new line'}
         </p>
       </div>
     </motion.div>

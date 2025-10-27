@@ -39,7 +39,7 @@ export function useAI(context: AIContext) {
     return message;
   }, []);
 
-  const sendUserMessage = useCallback(async (userMessage: string) => {
+  const sendUserMessage = useCallback(async (userMessage: string, screenshot?: string) => {
     if (!isAvailable) {
       throw new Error('AI is not available. Please add your Gemini API key.');
     }
@@ -48,7 +48,8 @@ export function useAI(context: AIContext) {
     
     try {
       // Add user message
-      addUserMessage(userMessage);
+      const userMsg = userMessage + (screenshot ? ' 📸' : '');
+      addUserMessage(userMsg);
 
       // Get conversation history
       const history = messages.map(msg => ({
@@ -62,8 +63,8 @@ export function useAI(context: AIContext) {
         recentActions,
       };
 
-      // Send to AI
-      const response = await sendMessage(userMessage, updatedContext, history);
+      // Send to AI (with optional screenshot)
+      const response = await sendMessage(userMessage, updatedContext, history, screenshot);
 
       // Add assistant response
       addAssistantMessage(response.message, response.actions);
