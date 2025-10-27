@@ -122,7 +122,7 @@ export function AIAssistant({
           <div>
             <h2 className="font-semibold">AI Assistant</h2>
             <p className="text-xs text-muted-foreground">
-              {isAvailable ? 'Powered by Gemini' : 'Not configured'}
+              {isAvailable ? 'Gemini 2.5 Flash' : 'Not configured'}
             </p>
           </div>
         </div>
@@ -246,7 +246,7 @@ export function AIAssistant({
               size="icon"
               variant="outline"
               className="shrink-0 h-[28px] w-[60px]"
-              title="Capture screenshot and show to AI"
+              title="📸 Optional: Capture screenshot so AI can see your design (uses more credits)"
             >
               {isCapturing ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

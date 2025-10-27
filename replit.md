@@ -8,14 +8,14 @@ A modern, interactive website builder specifically designed for creating restaur
 ### October 27, 2025 - AI Vision: Screenshot-Based Feedback ✅ COMPLETED
 - **New Feature**: AI can now see what it creates using Gemini's vision capabilities
   - Added camera button (📸) in AI Assistant input area
-  - Click the camera button to capture a screenshot of the canvas
-  - Screenshot automatically attaches to your next message
+  - **Optional feature** - Click the camera button only when you want AI to see your design (uses more credits)
+  - Screenshot attaches to your next message
   - AI receives both your text prompt AND the visual screenshot
   - AI can analyze layouts, colors, spacing, and provide visual feedback
 - **How It Works**:
   - Uses html2canvas to capture the canvas area
   - Converts screenshot to base64 PNG format
-  - Sends to Gemini 2.0 Flash with multimodal support (text + image)
+  - Sends to Gemini 2.5 Flash with multimodal support (text + image)
   - AI can see exactly what you see and provide better suggestions
 - **Use Cases**:
   - "What do you think of this layout?" - AI sees and critiques the design
