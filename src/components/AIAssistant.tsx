@@ -315,7 +315,7 @@ function ActionCard({ action }: { action: AIAction }) {
       {/* Debug: Show action data */}
       <details className="mt-2">
         <summary className="cursor-pointer text-muted-foreground hover:text-foreground">View data</summary>
-        <pre className="mt-1 p-2 bg-muted rounded text-xs overflow-auto max-h-32">
+        <pre className="mt-1 p-2 bg-muted rounded text-xs overflow-auto max-h-32 whitespace-pre-wrap break-all">
           {JSON.stringify(action.data, null, 2)}
         </pre>
       </details>
